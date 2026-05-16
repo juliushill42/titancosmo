@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cosmotologist — AI Frontend Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue-900: #042C53;
+    --blue-800: #0C447C;
+    --blue-600: #185FA5;
+    --blue-400: #378ADD;
+    --blue-200: #85B7EB;
+    --blue-100: #B5D4F4;
+    --blue-50:  #E6F1FB;
+    --white: #FFFFFF;
+    --ink: #07111C;
+    --ink-soft: #2E4A62;
+    --ink-muted: #6B8BA4;
+    --surface: #F5F9FF;
+    --border: rgba(55,138,221,0.15);
+    --border-strong: rgba(55,138,221,0.35);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--white);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 3rem; height: 64px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,0.96);
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(8px);
+  }
+  .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .nav-logo {
+    width: 32px; height: 32px; background: var(--blue-600); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .nav-logo svg { width: 18px; height: 18px; stroke: white; fill: none; stroke-width: 2; }
+  .nav-name { font-family: 'Bebas Neue'; font-size: 22px; color: var(--blue-900); letter-spacing: 1px; }
+  .nav-tag { font-size: 11px; font-weight: 500; color: var(--blue-600); background: var(--blue-50); padding: 3px 10px; border-radius: 20px; border: 1px solid var(--blue-100); }
+
+  /* ── LAYOUT ── */
+  .shell { display: grid; grid-template-columns: 280px 1fr; min-height: calc(100vh - 64px); }
+
+  /* ── SIDEBAR ── */
+  aside {
+    border-right: 1px solid var(--border);
+    padding: 1.5rem;
+    background: var(--surface);
+    display: flex; flex-direction: column; gap: 1.5rem;
+  }
+
+  .sidebar-section-title {
+    font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--ink-muted); margin-bottom: 8px;
+  }
+
+  /* Framework pills */
+  .pill-group { display: flex; flex-direction: column; gap: 4px; }
+  .pill {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px; border-radius: 8px; cursor: pointer;
+    font-size: 13px; font-weight: 500; color: var(--ink-soft);
+    border: 1px solid transparent; transition: all 0.15s;
+    user-select: none;
+  }
+  .pill:hover { background: var(--blue-50); color: var(--blue-800); }
+  .pill.active { background: var(--blue-600); color: white; border-color: var(--blue-600); }
+  .pill-icon { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.7; }
+  .pill.active .pill-icon { opacity: 1; filter: brightness(10); }
+
+  /* Style tokens */
+  .token-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .token {
+    padding: 8px 10px; border-radius: 7px; cursor: pointer; text-align: center;
+    font-size: 11px; font-weight: 600; color: var(--ink-soft);
+    border: 1px solid var(--border); background: var(--white);
+    transition: all 0.15s; user-select: none;
+  }
+  .token:hover { border-color: var(--blue-400); color: var(--blue-800); }
+  .token.active { background: var(--blue-800); color: white; border-color: var(--blue-800); }
+
+  /* Atomic level */
+  .level-grid { display: flex; flex-direction: column; gap: 4px; }
+  .level-btn {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 12px; border-radius: 7px; cursor: pointer;
+    font-size: 12px; font-weight: 500; color: var(--ink-soft);
+    border: 1px solid transparent; background: transparent;
+    font-family: inherit; text-align: left; transition: all 0.15s;
+  }
+  .level-btn:hover { background: var(--blue-50); }
+  .level-btn.active { background: var(--blue-50); color: var(--blue-800); border-color: var(--blue-100); }
+  .level-badge { font-size: 10px; background: var(--blue-100); color: var(--blue-800); padding: 2px 7px; border-radius: 10px; }
+  .level-btn.active .level-badge { background: var(--blue-600); color: white; }
+
+  /* ── MAIN ── */
+  main { display: flex; flex-direction: column; height: calc(100vh - 64px); overflow: hidden; }
+
+  /* Hero strip */
+  .hero-strip {
+    padding: 2rem 2.5rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, #f0f7ff 0%, #ffffff 60%);
+  }
+  .hero-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--blue-600); margin-bottom: 6px; }
+  .hero-title { font-family: 'Bebas Neue'; font-size: 42px; color: var(--blue-900); line-height: 1; letter-spacing: 1px; }
+  .hero-sub { font-size: 14px; color: var(--ink-muted); margin-top: 6px; max-width: 500px; line-height: 1.6; }
+
+  /* Prompt area */
+  .prompt-zone { padding: 1.5rem 2.5rem; border-bottom: 1px solid var(--border); }
+  .prompt-label { font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 8px; }
+  .prompt-row { display: flex; gap: 10px; align-items: flex-end; }
+  textarea {
+    flex: 1; padding: 14px 16px; font-size: 14px; font-family: 'DM Sans', sans-serif;
+    color: var(--ink); background: var(--white);
+    border: 1.5px solid var(--border-strong); border-radius: 10px;
+    resize: none; outline: none; line-height: 1.6; transition: border-color 0.2s;
+  }
+  textarea:focus { border-color: var(--blue-400); }
+  textarea::placeholder { color: var(--ink-muted); }
+  .build-btn {
+    padding: 14px 28px; background: var(--blue-600); color: white;
+    border: none; border-radius: 10px; font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap;
+    transition: background 0.15s; letter-spacing: 0.3px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .build-btn:hover { background: var(--blue-800); }
+  .build-btn:disabled { background: var(--blue-200); cursor: not-allowed; }
+  .build-btn svg { width: 16px; height: 16px; stroke: white; fill: none; stroke-width: 2.5; }
+
+  /* Output */
+  .output-zone { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  .output-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); padding: 0 2.5rem; }
+  .tab {
+    padding: 12px 20px; font-size: 13px; font-weight: 500; color: var(--ink-muted);
+    cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px;
+    transition: all 0.15s; white-space: nowrap;
+  }
+  .tab:hover { color: var(--blue-600); }
+  .tab.active { color: var(--blue-600); border-bottom-color: var(--blue-600); font-weight: 600; }
+
+  .output-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* Code panel */
+  .code-panel { flex: 1; overflow-y: auto; padding: 1.5rem 2.5rem; display: none; }
+  .code-panel.visible { display: block; }
+
+  .code-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .code-meta { display: flex; align-items: center; gap: 8px; }
+  .code-filename { font-family: 'DM Mono'; font-size: 12px; color: var(--ink-muted); }
+  .code-lines { font-size: 11px; color: var(--blue-400); background: var(--blue-50); padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+  .copy-btn {
+    padding: 7px 16px; font-size: 12px; font-weight: 600; font-family: inherit;
+    background: var(--surface); border: 1px solid var(--border-strong);
+    border-radius: 7px; color: var(--ink-soft); cursor: pointer; transition: all 0.15s;
+  }
+  .copy-btn:hover { background: var(--blue-600); color: white; border-color: var(--blue-600); }
+
+  .code-block {
+    background: var(--ink); border-radius: 12px; padding: 1.5rem;
+    font-family: 'DM Mono'; font-size: 12.5px; color: #a8d8ff;
+    line-height: 1.75; overflow-x: auto; white-space: pre-wrap; word-break: break-word;
+  }
+  .code-block .kw { color: #f8a8d8; }
+  .code-block .str { color: #a8f8c8; }
+  .code-block .cm { color: #4a6a84; }
+  .code-block .fn { color: #f8e8a8; }
+  .code-block .tag { color: #a8d8ff; }
+
+  /* Empty / loading state */
+  .empty-state {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 12px; color: var(--ink-muted); padding: 3rem;
+  }
+  .empty-state.hidden { display: none; }
+  .empty-icon { width: 56px; height: 56px; background: var(--blue-50); border-radius: 14px;
+    display: flex; align-items: center; justify-content: center; }
+  .empty-icon svg { width: 28px; height: 28px; stroke: var(--blue-400); fill: none; stroke-width: 1.5; }
+  .empty-title { font-size: 16px; font-weight: 600; color: var(--ink-soft); }
+  .empty-desc { font-size: 13px; text-align: center; max-width: 320px; line-height: 1.6; }
+
+  .loading-state {
+    flex: 1; display: none; flex-direction: column; align-items: center; justify-content: center;
+    gap: 16px;
+  }
+  .loading-state.visible { display: flex; }
+  .loader-ring {
+    width: 48px; height: 48px; border-radius: 50%;
+    border: 3px solid var(--blue-50); border-top-color: var(--blue-600);
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loader-text { font-size: 14px; color: var(--ink-muted); font-weight: 500; }
+  .loader-step { font-family: 'DM Mono'; font-size: 11px; color: var(--blue-400); }
+
+  /* Docs panel */
+  .docs-panel { flex: 1; overflow-y: auto; padding: 1.5rem 2.5rem; display: none; }
+  .docs-panel.visible { display: block; }
+  .docs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .doc-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 1.25rem; cursor: pointer; transition: all 0.15s;
+  }
+  .doc-card:hover { border-color: var(--blue-400); transform: translateY(-1px); }
+  .doc-tag { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--blue-600); margin-bottom: 6px; }
+  .doc-name { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+  .doc-desc { font-size: 12px; color: var(--ink-muted); line-height: 1.5; }
+
+  /* History panel */
+  .history-panel { flex: 1; overflow-y: auto; padding: 1.5rem 2.5rem; display: none; }
+  .history-panel.visible { display: block; }
+  .history-empty { text-align: center; color: var(--ink-muted); font-size: 14px; margin-top: 3rem; }
+  .history-item {
+    padding: 12px 16px; border: 1px solid var(--border); border-radius: 10px;
+    margin-bottom: 8px; cursor: pointer; transition: all 0.15s;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .history-item:hover { border-color: var(--blue-400); background: var(--blue-50); }
+  .history-fw { font-size: 10px; font-weight: 700; letter-spacing: 1px; color: var(--blue-600);
+    background: var(--blue-50); padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+  .history-prompt { font-size: 13px; color: var(--ink-soft); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .history-time { font-size: 11px; color: var(--ink-muted); white-space: nowrap; }
+
+  /* Status bar */
+  .status-bar {
+    padding: 8px 2.5rem; border-top: 1px solid var(--border); background: var(--surface);
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 11px; color: var(--ink-muted);
+  }
+  .status-left { display: flex; align-items: center; gap: 8px; }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #34d399; }
+  .status-dot.busy { background: var(--blue-400); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.3} }
+  .status-right { display: flex; gap: 16px; }
+
+  .error-banner {
+    margin: 1rem 2.5rem; padding: 12px 16px; background: #fef2f2;
+    border: 1px solid #fecaca; border-radius: 8px;
+    font-size: 13px; color: #991b1b; display: none;
+  }
+  .error-banner.visible { display: block; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="#">
+    <div class="nav-logo">
+      <svg viewBox="0 0 24 24"><polygon points="12,2 22,8.5 22,15.5 12,22 2,15.5 2,8.5"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="8.5" x2="22" y2="8.5"/><line x1="2" y1="15.5" x2="22" y2="15.5"/></svg>
+    </div>
+    <span class="nav-name">COSMOTOLOGIST</span>
+  </a>
+  <span class="nav-tag">AI Frontend Studio</span>
+</nav>
+
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside>
+    <div>
+      <div class="sidebar-section-title">Framework</div>
+      <div class="pill-group" id="fwGroup">
+        <div class="pill active" data-fw="React + Hooks">
+          <svg class="pill-icon" viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="2"/><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/></svg>
+          React + Hooks
+        </div>
+        <div class="pill" data-fw="Vanilla HTML/CSS/JS">
+          <svg class="pill-icon" viewBox="0 0 24 24" stroke="currentColor" fill="none"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          Vanilla HTML/CSS/JS
+        </div>
+        <div class="pill" data-fw="React + Tailwind">
+          <svg class="pill-icon" viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M12 2C6.5 8 4 13 6 17c2 4 8 6 12 3"/><path d="M12 2C17.5 8 20 13 18 17c-2 4-8 6-12 3"/></svg>
+          React + Tailwind
+        </div>
+        <div class="pill" data-fw="Svelte">
+          <svg class="pill-icon" viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M20.3 7c1 2.6.3 5.6-1.9 7.4L10 21.5C8 23 5 22.4 3.7 20.2c-1-2.6-.3-5.6 1.9-7.4L14 5.5C16 4 19 4.6 20.3 7z"/></svg>
+          Svelte
+        </div>
+        <div class="pill" data-fw="HTMX + Go/Rust">
+          <svg class="pill-icon" viewBox="0 0 24 24" stroke="currentColor" fill="none"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
+          HTMX + Go/Rust
+        </div>
+        <div class="pill" data-fw="SolidJS (Signals)">
+          <svg class="pill-icon" viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+          SolidJS (Signals)
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sidebar-section-title">Design Style</div>
+      <div class="token-grid" id="styleGroup">
+        <div class="token active" data-style="clean modern enterprise">Clean & Modern</div>
+        <div class="token" data-style="dark luxury refined">Dark Luxury</div>
+        <div class="token" data-style="bold editorial typographic">Editorial</div>
+        <div class="token" data-style="ultra minimal whitespace">Minimal</div>
+        <div class="token" data-style="corporate professional blue">Corporate</div>
+        <div class="token" data-style="playful colorful energetic">Playful</div>
+        <div class="token" data-style="glassmorphism frosted translucent">Glassmorphism</div>
+        <div class="token" data-style="brutalist raw stark">Brutalist</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sidebar-section-title">Atomic Level</div>
+      <div class="level-grid" id="levelGroup">
+        <button class="level-btn active" data-level="atom" data-desc="Single UI element">Atom <span class="level-badge">Button, Input, Badge</span></button>
+        <button class="level-btn" data-level="molecule" data-desc="Small grouped component">Molecule <span class="level-badge">Search bar, Card</span></button>
+        <button class="level-btn" data-level="organism" data-desc="Full section of a page">Organism <span class="level-badge">Navbar, Hero, Footer</span></button>
+        <button class="level-btn" data-level="template" data-desc="Full page layout">Template <span class="level-badge">Full Page Layout</span></button>
+        <button class="level-btn" data-level="page" data-desc="Complete working page">Page <span class="level-badge">Live Data + Content</span></button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+    <div class="hero-strip">
+      <div class="hero-eyebrow">Cosmotologist Studio</div>
+      <div class="hero-title">Build Any Frontend. Perfectly.</div>
+      <div class="hero-sub">State-of-the-art AI code generation. Pick your framework, style, and atomic level — then describe what you need.</div>
+    </div>
+
+    <div class="prompt-zone">
+      <div class="prompt-label">Describe Your Component</div>
+      <div class="prompt-row">
+        <textarea id="promptInput" rows="2" placeholder="e.g. A pricing table with 3 tiers, a highlighted 'Pro' plan, feature checkmarks, and a blue CTA button..."></textarea>
+        <button class="build-btn" id="buildBtn" onclick="generate()">
+          <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Generate
+        </button>
+      </div>
+    </div>
+
+    <div class="error-banner" id="errorBanner"></div>
+
+    <div class="output-zone">
+      <div class="output-tabs">
+        <div class="tab active" data-tab="code">Code Output</div>
+        <div class="tab" data-tab="docs">Component Library</div>
+        <div class="tab" data-tab="history">History</div>
+      </div>
+
+      <div class="output-body">
+
+        <!-- Code tab -->
+        <div class="code-panel visible" id="codePanel">
+          <div class="empty-state" id="emptyState">
+            <div class="empty-icon"><svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+            <div class="empty-title">Ready to generate</div>
+            <div class="empty-desc">Configure your settings on the left, describe your component above, and hit Generate.</div>
+          </div>
+          <div class="loading-state" id="loadingState">
+            <div class="loader-ring"></div>
+            <div class="loader-text" id="loaderText">Generating your component...</div>
+            <div class="loader-step" id="loaderStep">Analyzing design tokens</div>
+          </div>
+          <div id="codeOutput" style="display:none">
+            <div class="code-toolbar">
+              <div class="code-meta">
+                <span class="code-filename" id="codeFilename">component.jsx</span>
+                <span class="code-lines" id="codeLines">0 lines</span>
+              </div>
+              <button class="copy-btn" onclick="copyCode()">Copy Code</button>
+            </div>
+            <div class="code-block" id="codeBlock"></div>
+          </div>
+        </div>
+
+        <!-- Docs tab -->
+        <div class="docs-panel" id="docsPanel">
+          <div class="docs-grid">
+            <div class="doc-card" onclick="loadSnippet('hero')">
+              <div class="doc-tag">Organism</div>
+              <div class="doc-name">Hero Section</div>
+              <div class="doc-desc">Full-width headline, subtext, CTA buttons, and optional background visual.</div>
+            </div>
+            <div class="doc-card" onclick="loadSnippet('navbar')">
+              <div class="doc-tag">Organism</div>
+              <div class="doc-name">Navigation Bar</div>
+              <div class="doc-desc">Sticky top nav with logo, links, and CTA. Responsive hamburger menu.</div>
+            </div>
+            <div class="doc-card" onclick="loadSnippet('pricing')">
+              <div class="doc-tag">Organism</div>
+              <div class="doc-name">Pricing Table</div>
+              <div class="doc-desc">3-tier pricing cards with features list and highlighted recommended plan.</div>
+            </div>
+            <div class="doc-card" onclick="loadSnippet('dashboard')">
+              <div class="doc-tag">Template</div>
+              <div class="doc-name">Analytics Dashboard</div>
+              <div class="doc-desc">Metric cards, data charts, sidebar navigation, and data table.</div>
+            </div>
+            <div class="doc-card" onclick="loadSnippet('form')">
+              <div class="doc-tag">Molecule</div>
+              <div class="doc-name">Contact Form</div>
+              <div class="doc-desc">Validated form with name, email, message fields, and submit CTA.</div>
+            </div>
+            <div class="doc-card" onclick="loadSnippet('cards')">
+              <div class="doc-tag">Molecule</div>
+              <div class="doc-name">Feature Cards</div>
+              <div class="doc-desc">3-column icon + title + description card grid for landing pages.</div>
+            </div>
+            <div class="doc-card" onclick="loadSnippet('table')">
+              <div class="doc-tag">Organism</div>
+              <div class="doc-name">Data Table</div>
+              <div class="doc-desc">Sortable, filterable table with status badges, pagination, and row actions.</div>
+            </div>
+            <div class="doc-card" onclick="loadSnippet('footer')">
+              <div class="doc-tag">Organism</div>
+              <div class="doc-name">Site Footer</div>
+              <div class="doc-desc">Multi-column footer with links, newsletter input, and copyright.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- History tab -->
+        <div class="history-panel" id="historyPanel">
+          <div id="historyList"><div class="history-empty">No builds yet. Generate your first component above.</div></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="status-bar">
+      <div class="status-left">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusMsg">Ready</span>
+      </div>
+      <div class="status-right">
+        <span id="fwLabel">React + Hooks</span>
+        <span id="styleLabel">Clean & Modern</span>
+        <span id="levelLabel">Atom</span>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+let currentFw = 'React + Hooks';
+let currentStyle = 'clean modern enterprise';
+let currentLevel = 'atom';
+let currentLevelDesc = 'Single UI element';
+let lastCode = '';
+let history = [];
+
+// ── SELECTIONS ──
+document.querySelectorAll('#fwGroup .pill').forEach(p => {
+  p.addEventListener('click', () => {
+    document.querySelectorAll('#fwGroup .pill').forEach(x => x.classList.remove('active'));
+    p.classList.add('active');
+    currentFw = p.dataset.fw;
+    document.getElementById('fwLabel').textContent = currentFw;
+    updateFilename();
+  });
+});
+
+document.querySelectorAll('#styleGroup .token').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('#styleGroup .token').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    currentStyle = t.dataset.style;
+    document.getElementById('styleLabel').textContent = t.textContent;
+  });
+});
+
+document.querySelectorAll('#levelGroup .level-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('#levelGroup .level-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    currentLevel = b.dataset.level;
+    currentLevelDesc = b.dataset.desc;
+    document.getElementById('levelLabel').textContent = currentLevel.charAt(0).toUpperCase() + currentLevel.slice(1);
+  });
+});
+
+// ── TABS ──
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('codePanel').classList.remove('visible');
+    document.getElementById('docsPanel').classList.remove('visible');
+    document.getElementById('historyPanel').classList.remove('visible');
+    const target = t.dataset.tab;
+    document.getElementById(target + 'Panel').classList.add('visible');
+  });
+});
+
+function updateFilename() {
+  const ext = currentFw.includes('Svelte') ? 'svelte' : currentFw.includes('HTML') ? 'html' : currentFw.includes('HTMX') ? 'html' : 'jsx';
+  document.getElementById('codeFilename').textContent = `component.${ext}`;
+}
+
+// ── LOADER STEPS ──
+const loaderSteps = [
+  'Analyzing design tokens...', 'Building component tree...', 'Applying atomic structure...',
+  'Styling with design system...', 'Optimizing accessibility...', 'Generating final output...'
+];
+let loaderInterval;
+
+function startLoader() {
+  let i = 0;
+  document.getElementById('loaderStep').textContent = loaderSteps[0];
+  loaderInterval = setInterval(() => {
+    i = (i + 1) % loaderSteps.length;
+    document.getElementById('loaderStep').textContent = loaderSteps[i];
+  }, 900);
+}
+
+function stopLoader() { clearInterval(loaderInterval); }
+
+// ── GENERATE ──
+async function generate() {
+  const prompt = document.getElementById('promptInput').value.trim();
+  if (!prompt) {
+    const err = document.getElementById('errorBanner');
+    err.textContent = 'Please describe your component first.';
+    err.classList.add('visible');
+    setTimeout(() => err.classList.remove('visible'), 3000);
+    return;
+  }
+
+  document.getElementById('errorBanner').classList.remove('visible');
+  document.getElementById('buildBtn').disabled = true;
+  document.getElementById('emptyState').classList.add('hidden');
+  document.getElementById('codeOutput').style.display = 'none';
+  document.getElementById('loadingState').classList.add('visible');
+  document.getElementById('statusDot').classList.add('busy');
+  document.getElementById('statusMsg').textContent = 'Generating...';
+
+  // Switch to code tab
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelector('[data-tab="code"]').classList.add('active');
+  document.getElementById('docsPanel').classList.remove('visible');
+  document.getElementById('historyPanel').classList.remove('visible');
+  document.getElementById('codePanel').classList.add('visible');
+
+  startLoader();
+
+  const systemPrompt = `You are Cosmotologist, the world's most precise AI frontend code generator.
+You understand atomic design: atoms, molecules, organisms, templates, and pages.
+You follow design token principles and build production-ready, state-of-the-art frontend code.
+
+Current config:
+- Framework: ${currentFw}
+- Design style: ${currentStyle}
+- Atomic level: ${currentLevel} (${currentLevelDesc})
+- Primary color: #185FA5 (blue). Use blue as the only accent color.
+
+Rules:
+1. Output ONLY raw code. Zero markdown. Zero backticks. Zero explanation.
+2. Make it visually stunning and production-ready.
+3. Use only blue (#185FA5, #1a56db, #0C447C, #E6F1FB) as accent colors.
+4. Include all styles inline or in a <style> block within the file.
+5. Add realistic, specific placeholder content — never use "Lorem ipsum".
+6. For React: use functional components with hooks, no imports from external libraries unless standard.
+7. For HTML: make it fully self-contained in one file.
+8. Perfectly responsive. Accessible markup. Clean, readable code.
+9. Match the atomic level exactly — an atom is tiny and focused; a page is complete and full.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4096,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: `Build this ${currentLevel}: ${prompt}` }]
+      })
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || 'API error');
+
+    let code = (data.content || []).map(b => b.text || '').join('');
+    code = code.replace(/^```[\w]*\n?/,'').replace(/\n?```$/,'').trim();
+    lastCode = code;
+
+    const lines = code.split('\n').length;
+    document.getElementById('codeLines').textContent = lines + ' lines';
+    document.getElementById('codeBlock').innerHTML = highlight(code);
+    document.getElementById('codeOutput').style.display = 'block';
+    updateFilename();
+
+    // Add to history
+    const ts = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    history.unshift({ fw: currentFw.split(' ')[0], prompt: prompt.slice(0,60), time: ts, code });
+    renderHistory();
+
+    document.getElementById('statusMsg').textContent = `Done — ${lines} lines generated`;
+  } catch(e) {
+    const err = document.getElementById('errorBanner');
+    err.textContent = 'Generation failed: ' + e.message;
+    err.classList.add('visible');
+    document.getElementById('emptyState').classList.remove('hidden');
+    document.getElementById('statusMsg').textContent = 'Error — try again';
+  } finally {
+    stopLoader();
+    document.getElementById('loadingState').classList.remove('visible');
+    document.getElementById('buildBtn').disabled = false;
+    document.getElementById('statusDot').classList.remove('busy');
+  }
+}
+
+function highlight(code) {
+  return code
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\b(import|export|const|let|var|function|return|default|from|if|else|for|while|class|async|await|new|true|false|null|undefined|typeof|instanceof)\b/g,'<span class="kw">$1</span>')
+    .replace(/("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`)/g,'<span class="str">$1</span>')
+    .replace(/(\/\/[^\n]*)/g,'<span class="cm">$1</span>');
+}
+
+function copyCode() {
+  if (!lastCode) return;
+  navigator.clipboard.writeText(lastCode);
+  const btn = document.querySelector('.copy-btn');
+  btn.textContent = 'Copied!';
+  setTimeout(() => btn.textContent = 'Copy Code', 2000);
+}
+
+function renderHistory() {
+  const list = document.getElementById('historyList');
+  if (!history.length) { list.innerHTML = '<div class="history-empty">No builds yet.</div>'; return; }
+  list.innerHTML = history.map((h,i) => `
+    <div class="history-item" onclick="loadHistory(${i})">
+      <span class="history-fw">${h.fw}</span>
+      <span class="history-prompt">${h.prompt}${h.prompt.length >= 60 ? '...' : ''}</span>
+      <span class="history-time">${h.time}</span>
+    </div>`).join('');
+}
+
+function loadHistory(i) {
+  const h = history[i];
+  lastCode = h.code;
+  document.getElementById('codeBlock').innerHTML = highlight(h.code);
+  document.getElementById('codeLines').textContent = h.code.split('\n').length + ' lines';
+  document.getElementById('codeOutput').style.display = 'block';
+  document.getElementById('emptyState').classList.add('hidden');
+  // Switch to code tab
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelector('[data-tab="code"]').classList.add('active');
+  document.getElementById('docsPanel').classList.remove('visible');
+  document.getElementById('historyPanel').classList.remove('visible');
+  document.getElementById('codePanel').classList.add('visible');
+}
+
+function loadSnippet(type) {
+  const snippets = {
+    hero: 'A full-width hero section with a large headline, subheadline, two CTA buttons (primary blue and outlined), and a subtle geometric background pattern',
+    navbar: 'A sticky navigation bar with a logo on the left, 5 nav links in the center, and a blue "Get Started" button on the right',
+    pricing: 'A 3-tier pricing table with Free, Pro, and Enterprise plans. Pro plan is highlighted in blue. Each plan has a feature checklist and a CTA button',
+    dashboard: 'An analytics dashboard with 4 metric cards at the top, a line chart for revenue over time, and a data table showing recent orders with status badges',
+    form: 'A contact form with name, email, company, and message fields, form validation, and a blue submit button',
+    cards: 'A 3-column feature card grid for a SaaS landing page with icons, bold feature names, and short descriptions',
+    table: 'A data table showing 10 users with columns: name, email, role, status (colored badge), joined date, and action buttons',
+    footer: 'A site footer with 4 columns: company info with logo, Products links, Company links, and a newsletter signup form'
+  };
+  document.getElementById('promptInput').value = snippets[type];
+  // Switch to code tab and scroll up
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelector('[data-tab="code"]').classList.add('active');
+  document.getElementById('docsPanel').classList.remove('visible');
+  document.getElementById('historyPanel').classList.remove('visible');
+  document.getElementById('codePanel').classList.add('visible');
+}
+
+document.getElementById('promptInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) generate();
+});
+</script>
+</body>
+</html>
