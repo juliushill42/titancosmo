@@ -1,4 +1,21 @@
-Here is the dedicated, production-ready `README.md` for your **Cosmotologist** web application repository, structured precisely to document the architecture, establish your public 2026 timeline, and protect your intellectual property.
+---
+
+## 🛑 Commercial Licensing & Enterprise Terms
+
+### ⚠️ PRODUCTION USE REQUIRES A PAID LICENSE
+This software is governed strictly by the **Business Source License 1.1 (BSL 1.1)**. 
+
+* **Free Tier:** You are completely free to clone, read, benchmark, tweak, and run this architecture locally for non-production testing, development isolates, and hobbyist environments.
+* **Commercial Production Tier:** Running this local-first microservice framework or its automated routing components inside a live, revenue-generating, or operational enterprise environment **is legally restricted**. 
+
+> ### 💼 Enterprise Compliance Notice
+> If your organization scales past individual evaluation loops and integrates these modules into commercial production pipelines, you must execute a paid **Commercial Enterprise Agreement**. Licensing metrics scale linearly based on internal seats, container deployment instances, or flat-rate cluster footprints.
+
+To negotiate a commercial production license, white-label distribution rights, or custom enterprise architecture support contracts, contact the engineering desk at:
+📧 **licensing@titanuai.com**
+
+---
+Copyright (c) 2026, TitanU AI LLC / JuJu Labs. All rights reserved.
 
 ---
 
